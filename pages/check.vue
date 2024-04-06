@@ -16,11 +16,12 @@ import type { CurrentUser } from "~/types/common.types";
 
 const userStore = useUserStore();
 const appStore = useAppStore();
+const config = useRuntimeConfig();
 
 onMounted(async () => {
   try {
     const data = await $fetch<CurrentUser>(
-      "http://localhost:8080/auth/profile",
+      `${config.public.serviceBaseUrl}/auth/profile`,
       {
         credentials: "include",
       }
@@ -30,9 +31,11 @@ onMounted(async () => {
     const { initialRoutePath } = appStore;
     await navigateTo(initialRoutePath === "/check" ? "/" : initialRoutePath);
   } catch (error) {
-    console.log("hi");
-    console.log(error);
     await navigateTo("/login");
   }
+});
+
+definePageMeta({
+  layout: "public",
 });
 </script>

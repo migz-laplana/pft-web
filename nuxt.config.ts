@@ -5,4 +5,14 @@ export default defineNuxtConfig({
   colorMode: {
     preference: "light",
   },
+  app: {
+    head: {
+      title: 'Physical Fitness Test'
+    }
+  },
+  runtimeConfig: {
+    public: {
+      serviceBaseUrl: ''
+    }
+  }
 });
