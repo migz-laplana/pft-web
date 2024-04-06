@@ -1,22 +1,63 @@
 <template>
-  <div class="container">
-    <div class="sign-in-container">
-      <h1>Sign In</h1>
-      <div class="input-block">
-        <label for="email">Email:</label>
-        <input id="email" v-model="email" />
-      </div>
-      <div class="input-block">
-        <label for="password">Password:</label>
-        <input type="password" id="password" v-model="password" />
-      </div>
+  <UContainer>
+    <div class="mt-40">
+      <div class="max-w-md mx-auto border-2 rounded shadow-lg p-7">
+        <h1 class="text-2xl mb-4 text-center">Physical Fitness Test App</h1>
+        <h2 class="text-xl text-center">Sign In</h2>
+        <UFormGroup label="Email" required class="my-6">
+          <UInput
+            v-model="email"
+            icon="i-heroicons-envelope"
+            placeholder="you@example.com"
+            size="xl"
+          />
+        </UFormGroup>
 
-      <div class="sign-in-buttons-container">
-        <button @click="signIn">Sign In</button>
+        <UFormGroup label="Password" required class="my-6">
+          <UInput
+            v-model="password"
+            icon="i-heroicons-lock-closed"
+            placeholder="**********"
+            size="xl"
+            :type="showPassword ? 'text' : 'password'"
+            :ui="{ icon: { trailing: { pointer: '' } } }"
+          >
+            <template #trailing>
+              <UButton
+                color="gray"
+                :icon="showPasswordIcon"
+                :padded="false"
+                variant="link"
+                @click="toggleShowPassword"
+              />
+            </template>
+          </UInput>
+        </UFormGroup>
+
+        <div class="max-w-32 mx-auto">
+          <UButton
+            class="mt-10"
+            size="lg"
+            :loading="isSignInLoading"
+            @click="signIn"
+            :disabled="isSignInLoading"
+            block
+          >
+            Sign In
+          </UButton>
+        </div>
+
+        <UAlert
+          v-if="isSignInError"
+          class="mt-10"
+          color="red"
+          icon="i-heroicons-exclamation-triangle-solid"
+          variant="subtle"
+          title="Error signing in! Please try again."
+        />
       </div>
-      <div v-if="isSignInError">Error with sign-in!!</div>
     </div>
-  </div>
+  </UContainer>
 </template>
 
 <script setup lang="ts">
@@ -26,15 +67,27 @@ import type { CurrentUser } from "~/types/common.types";
 const email = ref<string>("");
 const password = ref<string>("");
 const isSignInError = ref<boolean>(false);
+const isSignInLoading = ref<boolean>(false);
 const userStore = useUserStore();
+const showPassword = ref<boolean>(false);
+
+const showPasswordIcon = computed(() =>
+  showPassword.value ? "i-heroicons-eye" : "i-heroicons-eye-slash"
+);
+
+const toggleShowPassword = () => {
+  showPassword.value = !showPassword.value;
+};
 
 const signIn = async () => {
+  isSignInLoading.value = true;
   isSignInError.value = false;
 
   try {
     const data = await $fetch<CurrentUser>("http://localhost:8080/auth/login", {
       method: "POST",
       body: { email: email.value, password: password.value },
+      credentials: "include",
     });
 
     userStore.setUserData(data);
@@ -42,31 +95,8 @@ const signIn = async () => {
     await navigateTo("/");
   } catch (e) {
     isSignInError.value = true;
+  } finally {
+    isSignInLoading.value = false;
   }
 };
 </script>
-
-<style scoped>
-.container {
-  margin-top: 100px;
-}
-.sign-in-container {
-  text-align: center;
-}
-
-label {
-  margin-right: 10px;
-}
-
-.input-block {
-  margin-block: 12px;
-}
-
-.sign-in-buttons-container {
-  margin-top: 40px;
-}
-
-.sign-in-buttons-container button {
-  margin-inline: 10px;
-}
-</style>

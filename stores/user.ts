@@ -1,5 +1,3 @@
-// stores/counter.ts
-
 import { defineStore } from "pinia";
 import type { CurrentUser } from "~/types/common.types";
 
