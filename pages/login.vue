@@ -1,6 +1,6 @@
 <template>
   <UContainer>
-    <div class="mt-40">
+    <div class="mt-6 md:mt-40">
       <div class="max-w-md mx-auto border-2 rounded shadow-lg p-7">
         <h1 class="text-2xl mb-4 text-center">Physical Fitness Test App</h1>
         <h2 class="text-xl text-center">Sign In</h2>
