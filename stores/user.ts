@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
-import type { CurrentUser } from "~/types/common.types";
+import type { UserProfile } from "~/types/common.types";
 
 export const useUserStore = defineStore("user", () => {
-  const currentUser = ref<CurrentUser | null>();
+  const currentUser = ref<UserProfile | null>();
 
-  function setUserData(user: CurrentUser | null) {
+  function setUserData(user: UserProfile | null) {
     currentUser.value = user;
   }
 

@@ -1,10 +1,10 @@
-export enum USER_ROLE {
-  TEACHER = "TEACHER",
-  STUDENT = "STUDENT",
+export enum UserRole {
+  TEACHER = "teacher",
+  STUDENT = "student",
 }
 
-export type CurrentUser = {
-  role: USER_ROLE;
+export type UserProfile = {
+  role: UserRole;
   firstName: string;
   lastName: string;
   email: string;
