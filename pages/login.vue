@@ -61,16 +61,18 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from "~/stores/user";
-import type { CurrentUser } from "~/types/common.types";
-
 const email = ref<string>("");
 const password = ref<string>("");
 const isSignInError = ref<boolean>(false);
 const isSignInLoading = ref<boolean>(false);
 const showPassword = ref<boolean>(false);
+const supabase = useSupabaseClient();
 const userStore = useUserStore();
-const config = useRuntimeConfig();
+const { getProfileDetails } = useProfile();
+
+definePageMeta({
+  layout: "public",
+});
 
 const showPasswordIcon = computed(() =>
   showPassword.value ? "i-heroicons-eye" : "i-heroicons-eye-slash"
@@ -85,26 +87,19 @@ const signIn = async () => {
   isSignInError.value = false;
 
   try {
-    const data = await $fetch<CurrentUser>(
-      `${config.public.serviceBaseUrl}/auth/login`,
-      {
-        method: "POST",
-        body: { email: email.value, password: password.value },
-        credentials: "include",
-      }
-    );
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.value,
+      password: password.value,
+    });
 
-    userStore.setUserData(data);
-
+    if (error) throw error;
+    const profile = await getProfileDetails();
+    userStore.setUserData(profile);
     await navigateTo("/");
-  } catch (e) {
+  } catch (error) {
     isSignInError.value = true;
   } finally {
     isSignInLoading.value = false;
   }
-
-  definePageMeta({
-    layout: "public",
-  });
 };
 </script>

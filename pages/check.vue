@@ -11,31 +11,35 @@
 </template>
 
 <script setup lang="ts">
-import { useAppStore } from "~/stores/app";
-import type { CurrentUser } from "~/types/common.types";
+definePageMeta({
+  layout: "public",
+});
 
 const userStore = useUserStore();
-const appStore = useAppStore();
-const config = useRuntimeConfig();
+const authenticatedUser = useSupabaseUser();
+const route = useRoute();
+const { getProfileDetails } = useProfile();
+
+const destinationPath = route.query.dest?.toString();
 
 onMounted(async () => {
   try {
-    const data = await $fetch<CurrentUser>(
-      `${config.public.serviceBaseUrl}/auth/profile`,
-      {
-        credentials: "include",
-      }
-    );
+    const profile = await getProfileDetails();
+    userStore.setUserData(profile);
 
-    userStore.setUserData(data);
-    const { initialRoutePath } = appStore;
-    await navigateTo(initialRoutePath === "/check" ? "/" : initialRoutePath);
+    let navPathTarget = destinationPath;
+    console.log(navPathTarget);
+
+    if (
+      (destinationPath === "/login" && authenticatedUser.value) ||
+      destinationPath === "/check"
+    ) {
+      navPathTarget = "/";
+    }
+
+    await navigateTo(navPathTarget);
   } catch (error) {
     await navigateTo("/login");
   }
-});
-
-definePageMeta({
-  layout: "public",
 });
 </script>

@@ -1,18 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ["@pinia/nuxt", "@nuxt/ui"],
+  modules: ["@pinia/nuxt", "@nuxt/ui", "@nuxtjs/supabase"],
   colorMode: {
     preference: "light",
   },
   app: {
     head: {
-      title: 'Physical Fitness Test'
-    }
+      title: "Physical Fitness Test",
+    },
   },
-  runtimeConfig: {
-    public: {
-      serviceBaseUrl: ''
-    }
-  }
+  supabase: {
+    redirect: false,
+  },
 });

@@ -15,8 +15,7 @@
 
 <script setup lang="ts">
 const userStore = useUserStore();
-const config = useRuntimeConfig();
-
+const supabase = useSupabaseClient();
 const toast = useToast();
 
 const showLogoutError = () => {
@@ -25,12 +24,11 @@ const showLogoutError = () => {
 
 const signOut = async () => {
   try {
-    await $fetch(`${config.public.serviceBaseUrl}/auth/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+
     userStore.setUserData(null);
-    navigateTo("/login");
+    await navigateTo("/login");
   } catch (e) {
     showLogoutError();
   }
