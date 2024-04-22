@@ -7,54 +7,38 @@ export type Json =
   | Json[];
 
 export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never;
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      graphql: {
+        Args: {
+          operationName?: string;
+          query?: string;
+          variables?: Json;
+          extensions?: Json;
+        };
+        Returns: Json;
+      };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
   public: {
     Tables: {
-      CLASS: {
-        Row: {
-          created_at: string;
-          id: number;
-          name: string;
-          school_id: number | null;
-          teacher_id: number | null;
-        };
-        Insert: {
-          created_at?: string;
-          id?: number;
-          name: string;
-          school_id?: number | null;
-          teacher_id?: number | null;
-        };
-        Update: {
-          created_at?: string;
-          id?: number;
-          name?: string;
-          school_id?: number | null;
-          teacher_id?: number | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "public_SECTION_school_fkey";
-            columns: ["school_id"];
-            isOneToOne: false;
-            referencedRelation: "SCHOOL";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "public_SECTION_teacher_fkey";
-            columns: ["teacher_id"];
-            isOneToOne: false;
-            referencedRelation: "TEACHER";
-            referencedColumns: ["id"];
-          }
-        ];
-      };
-      FITNESS_TEST: {
+      fitness_test: {
         Row: {
           class_id: number;
           created_at: string;
           id: number;
-          school_id: number;
-          student_id: number;
           test_1_score: string | null;
           test_2_secore: string | null;
         };
@@ -62,8 +46,6 @@ export type Database = {
           class_id: number;
           created_at?: string;
           id?: number;
-          school_id: number;
-          student_id: number;
           test_1_score?: string | null;
           test_2_secore?: string | null;
         };
@@ -71,8 +53,6 @@ export type Database = {
           class_id?: number;
           created_at?: string;
           id?: number;
-          school_id?: number;
-          student_id?: number;
           test_1_score?: string | null;
           test_2_secore?: string | null;
         };
@@ -81,111 +61,69 @@ export type Database = {
             foreignKeyName: "public_FITNESS_TEST_class_id_fkey";
             columns: ["class_id"];
             isOneToOne: false;
-            referencedRelation: "CLASS";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "public_FITNESS_TEST_school_id_fkey";
-            columns: ["school_id"];
-            isOneToOne: false;
-            referencedRelation: "SCHOOL";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "public_FITNESS_TEST_student_id_fkey";
-            columns: ["student_id"];
-            isOneToOne: false;
-            referencedRelation: "STUDENT";
+            referencedRelation: "school_class";
             referencedColumns: ["id"];
           }
         ];
       };
-      SCHOOL: {
+      school_class: {
         Row: {
           created_at: string;
           id: number;
           name: string;
+          teacher_id: number;
         };
         Insert: {
           created_at?: string;
           id?: number;
           name: string;
+          teacher_id: number;
         };
         Update: {
           created_at?: string;
           id?: number;
           name?: string;
-        };
-        Relationships: [];
-      };
-      STUDENT: {
-        Row: {
-          class_id: number | null;
-          created_at: string;
-          first_name: string;
-          id: number;
-          last_name: string;
-          user_auth_uid: string | null;
-        };
-        Insert: {
-          class_id?: number | null;
-          created_at?: string;
-          first_name: string;
-          id?: number;
-          last_name: string;
-          user_auth_uid?: string | null;
-        };
-        Update: {
-          class_id?: number | null;
-          created_at?: string;
-          first_name?: string;
-          id?: number;
-          last_name?: string;
-          user_auth_uid?: string | null;
+          teacher_id?: number;
         };
         Relationships: [
           {
-            foreignKeyName: "public_STUDENT_section_fkey";
-            columns: ["class_id"];
+            foreignKeyName: "public_school_class_teacher_id_fkey";
+            columns: ["teacher_id"];
             isOneToOne: false;
-            referencedRelation: "CLASS";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "public_STUDENT_user_auth_uid_fkey";
-            columns: ["user_auth_uid"];
-            isOneToOne: true;
             referencedRelation: "users";
             referencedColumns: ["id"];
           }
         ];
       };
-      TEACHER: {
+      users: {
         Row: {
+          auth_id: string;
           created_at: string;
           first_name: string;
           id: number;
           last_name: string;
-          user_auth_uid: string | null;
+          role: Database["public"]["Enums"]["pft_role"];
         };
         Insert: {
+          auth_id: string;
           created_at?: string;
           first_name: string;
           id?: number;
           last_name: string;
-          user_auth_uid?: string | null;
+          role?: Database["public"]["Enums"]["pft_role"];
         };
         Update: {
+          auth_id?: string;
           created_at?: string;
           first_name?: string;
           id?: number;
           last_name?: string;
-          user_auth_uid?: string | null;
+          role?: Database["public"]["Enums"]["pft_role"];
         };
         Relationships: [
           {
-            foreignKeyName: "public_TEACHER_user_auth_uid_fkey";
-            columns: ["user_auth_uid"];
+            foreignKeyName: "public_users_auth_id_fkey";
+            columns: ["auth_id"];
             isOneToOne: true;
             referencedRelation: "users";
             referencedColumns: ["id"];
@@ -198,6 +136,185 @@ export type Database = {
     };
     Functions: {
       [_ in never]: never;
+    };
+    Enums: {
+      pft_role: "student" | "teacher";
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
+  storage: {
+    Tables: {
+      buckets: {
+        Row: {
+          allowed_mime_types: string[] | null;
+          avif_autodetection: boolean | null;
+          created_at: string | null;
+          file_size_limit: number | null;
+          id: string;
+          name: string;
+          owner: string | null;
+          owner_id: string | null;
+          public: boolean | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          allowed_mime_types?: string[] | null;
+          avif_autodetection?: boolean | null;
+          created_at?: string | null;
+          file_size_limit?: number | null;
+          id: string;
+          name: string;
+          owner?: string | null;
+          owner_id?: string | null;
+          public?: boolean | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          allowed_mime_types?: string[] | null;
+          avif_autodetection?: boolean | null;
+          created_at?: string | null;
+          file_size_limit?: number | null;
+          id?: string;
+          name?: string;
+          owner?: string | null;
+          owner_id?: string | null;
+          public?: boolean | null;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
+      migrations: {
+        Row: {
+          executed_at: string | null;
+          hash: string;
+          id: number;
+          name: string;
+        };
+        Insert: {
+          executed_at?: string | null;
+          hash: string;
+          id: number;
+          name: string;
+        };
+        Update: {
+          executed_at?: string | null;
+          hash?: string;
+          id?: number;
+          name?: string;
+        };
+        Relationships: [];
+      };
+      objects: {
+        Row: {
+          bucket_id: string | null;
+          created_at: string | null;
+          id: string;
+          last_accessed_at: string | null;
+          metadata: Json | null;
+          name: string | null;
+          owner: string | null;
+          owner_id: string | null;
+          path_tokens: string[] | null;
+          updated_at: string | null;
+          version: string | null;
+        };
+        Insert: {
+          bucket_id?: string | null;
+          created_at?: string | null;
+          id?: string;
+          last_accessed_at?: string | null;
+          metadata?: Json | null;
+          name?: string | null;
+          owner?: string | null;
+          owner_id?: string | null;
+          path_tokens?: string[] | null;
+          updated_at?: string | null;
+          version?: string | null;
+        };
+        Update: {
+          bucket_id?: string | null;
+          created_at?: string | null;
+          id?: string;
+          last_accessed_at?: string | null;
+          metadata?: Json | null;
+          name?: string | null;
+          owner?: string | null;
+          owner_id?: string | null;
+          path_tokens?: string[] | null;
+          updated_at?: string | null;
+          version?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "objects_bucketId_fkey";
+            columns: ["bucket_id"];
+            isOneToOne: false;
+            referencedRelation: "buckets";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      can_insert_object: {
+        Args: {
+          bucketid: string;
+          name: string;
+          owner: string;
+          metadata: Json;
+        };
+        Returns: undefined;
+      };
+      extension: {
+        Args: {
+          name: string;
+        };
+        Returns: string;
+      };
+      filename: {
+        Args: {
+          name: string;
+        };
+        Returns: string;
+      };
+      foldername: {
+        Args: {
+          name: string;
+        };
+        Returns: string[];
+      };
+      get_size_by_bucket: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          size: number;
+          bucket_id: string;
+        }[];
+      };
+      search: {
+        Args: {
+          prefix: string;
+          bucketname: string;
+          limits?: number;
+          levels?: number;
+          offsets?: number;
+          search?: string;
+          sortcolumn?: string;
+          sortorder?: string;
+        };
+        Returns: {
+          name: string;
+          id: string;
+          updated_at: string;
+          created_at: string;
+          last_accessed_at: string;
+          metadata: Json;
+        }[];
+      };
     };
     Enums: {
       [_ in never]: never;
