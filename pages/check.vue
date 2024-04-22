@@ -28,7 +28,6 @@ onMounted(async () => {
     userStore.setUserData(profile);
 
     let navPathTarget = destinationPath;
-    console.log(navPathTarget);
 
     if (
       (destinationPath === "/login" && authenticatedUser.value) ||

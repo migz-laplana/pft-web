@@ -1,36 +1,24 @@
-import { UserRole, type UserProfile } from "~/types/common.types";
+import type { UserProfile } from "~/types/common.types";
 import type { Database } from "~/types/supabase.types";
+import { mapSupabaseEnumToRoleEnum } from "~/utils/roleEnumMapper";
 
 export const useProfile = () => {
   const authenticatedUser = useSupabaseUser();
   const supabase = useSupabaseClient<Database>();
 
   const getProfileDetails = async (): Promise<UserProfile> => {
-    const { data: teacherData } = await supabase
-      .from("TEACHER")
+    const { data: userData } = await supabase
+      .from("users")
       .select()
       .throwOnError();
 
-    if (teacherData?.length) {
+    if (userData?.length) {
       return {
-        firstName: teacherData[0].first_name,
-        lastName: teacherData[0].last_name,
-        role: UserRole.TEACHER,
+        firstName: userData[0].first_name,
+        lastName: userData[0].last_name,
+        role: mapSupabaseEnumToRoleEnum(userData[0].role),
         email: authenticatedUser.value?.email!,
-      };
-    }
-
-    const { data: studentData } = await supabase
-      .from("STUDENT")
-      .select()
-      .throwOnError();
-
-    if (studentData?.length) {
-      return {
-        firstName: studentData[0].first_name,
-        lastName: studentData[0].last_name,
-        role: UserRole.STUDENT,
-        email: authenticatedUser.value?.email!,
+        userId: userData[0].id
       };
     }
 
