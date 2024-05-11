@@ -6,7 +6,7 @@
         <h2 class="text-xl text-center">Sign In</h2>
         <UFormGroup label="Email" required class="my-6">
           <UInput
-            v-model="email"
+            v-model="emailInput"
             icon="i-heroicons-envelope"
             placeholder="you@example.com"
             size="xl"
@@ -15,7 +15,7 @@
 
         <UFormGroup label="Password" required class="my-6">
           <UInput
-            v-model="password"
+            v-model="passwordInput"
             icon="i-heroicons-lock-closed"
             placeholder="**********"
             size="xl"
@@ -39,7 +39,7 @@
             class="mt-10"
             size="lg"
             :loading="isSignInLoading"
-            @click="signIn"
+            @click="handleSignIn"
             :disabled="isSignInLoading"
             block
           >
@@ -61,14 +61,14 @@
 </template>
 
 <script setup lang="ts">
-const email = ref<string>("");
-const password = ref<string>("");
-const isSignInError = ref<boolean>(false);
-const isSignInLoading = ref<boolean>(false);
+import { useAuth } from "~/composables/useAuth";
+import { mapDbEnumToRoleEnum } from "~/utils/roleEnumMapper";
+
+const emailInput = ref<string>("");
+const passwordInput = ref<string>("");
 const showPassword = ref<boolean>(false);
-const supabase = useSupabaseClient();
 const userStore = useUserStore();
-const { getProfileDetails } = useProfile();
+const { signIn, isSignInLoading, isSignInError } = useAuth();
 
 definePageMeta({
   layout: "public",
@@ -82,24 +82,20 @@ const toggleShowPassword = () => {
   showPassword.value = !showPassword.value;
 };
 
-const signIn = async () => {
-  isSignInLoading.value = true;
-  isSignInError.value = false;
-
-  try {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email.value,
-      password: password.value,
-    });
-
-    if (error) throw error;
-    const profile = await getProfileDetails();
-    userStore.setUserData(profile);
-    await navigateTo("/");
-  } catch (error) {
-    isSignInError.value = true;
-  } finally {
-    isSignInLoading.value = false;
-  }
+const handleSignIn = async () => {
+  const data = await signIn({
+    email: emailInput.value,
+    password: passwordInput.value,
+  });
+  if (!data) return;
+  const { _id, firstName, lastName, role, email } = data;
+  userStore.setUserData({
+    userId: _id,
+    firstName,
+    lastName,
+    role: mapDbEnumToRoleEnum(role),
+    email,
+  });
+  await navigateTo("/");
 };
 </script>

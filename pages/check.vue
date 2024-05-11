@@ -16,7 +16,6 @@ definePageMeta({
 });
 
 const userStore = useUserStore();
-const authenticatedUser = useSupabaseUser();
 const route = useRoute();
 const { getProfileDetails } = useProfile();
 
@@ -29,10 +28,7 @@ onMounted(async () => {
 
     let navPathTarget = destinationPath;
 
-    if (
-      (destinationPath === "/login" && authenticatedUser.value) ||
-      destinationPath === "/check"
-    ) {
+    if (destinationPath === "/login" || destinationPath === "/check") {
       navPathTarget = "/";
     }
 
