@@ -1,8 +1,8 @@
 import { UserRole } from "~/types/common.types";
 
-export const mapSupabaseEnumToRoleEnum = (roleValue: string) => {
+export const mapDbEnumToRoleEnum = (roleValue: string) => {
   let role = UserRole.STUDENT;
-  if ((roleValue = "teacher")) {
+  if ((roleValue = "TEACHER")) {
     role = UserRole.TEACHER;
   }
 

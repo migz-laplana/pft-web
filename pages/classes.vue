@@ -7,14 +7,14 @@
       <UButton @click="toggleCreateClassModal">Create a class</UButton>
       <div class="mt-14">
         <h2 class="text-2xl mb-8">Your Classes</h2>
-        <div v-if="!classesData?.length">
+        <div v-if="!classes?.length">
           <p>No classes yet.</p>
         </div>
-        <p v-if="classesError" class="text-red-500">
+        <p v-if="isClassesError" class="text-red-500">
           Error loading your classes.
         </p>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <UCard v-for="classItem in classesData" class="">
+          <UCard v-for="classItem in classes" class="">
             {{ classItem.name }}
           </UCard>
         </div>
@@ -29,7 +29,7 @@
             <UInput v-model="className" placeholder="Section 2-A" size="xl" />
           </UFormGroup>
           <UAlert
-            v-if="creatingClassError"
+            v-if="isCreateClassError"
             color="red"
             title="Error creating class."
             icon="i-heroicons-exclamation-triangle-solid"
@@ -38,9 +38,9 @@
           <div class="mt-14 flex justify-center">
             <UButton
               class="mx-4"
-              :disabled="isCreatingClass"
-              :loading="isCreatingClass"
-              @click="createClass"
+              :disabled="isCreateClassLoading"
+              :loading="isCreateClassLoading"
+              @click="handleCreateClass"
             >
               Create class
             </UButton>
@@ -49,7 +49,7 @@
               class="mx-4"
               variant="outline"
               color="red"
-              :disabled="isCreatingClass"
+              :disabled="isCreateClassLoading"
             >
               Cancel
             </UButton>
@@ -69,31 +69,39 @@
 </template>
 
 <script setup lang="ts">
-import type { Database } from "~/types/supabase.types";
+import { useClasses } from "~/composables/useClasses";
 
 const createClassModalOpen = ref<boolean>(false);
 const className = ref<string>("");
-const isCreatingClass = ref<boolean>(false);
-const creatingClassError = ref<boolean>(false);
 const creatingClassSuccess = ref<boolean>(false);
-const supabase = useSupabaseClient<Database>();
-const userStore = useUserStore();
+const isCreateClassError = ref<boolean>(false);
+
+const {
+  classes,
+  getClasses,
+  isClassesError,
+  createClass,
+  isCreateClassLoading,
+} = useClasses();
 
 const toggleCreateClassModal = () => {
   createClassModalOpen.value = !createClassModalOpen.value;
 };
 
-const {
-  data: classesData,
-  error: classesError,
-  refresh,
-} = await useAsyncData("classes", async () => {
-  const { data } = await supabase.from("school_class").select().throwOnError();
-  return data;
-});
+const handleCreateClass = async () => {
+  isCreateClassError.value = false;
+
+  try {
+    await createClass(className.value);
+    creatingClassSuccess.value = true;
+  } catch (error) {
+    isCreateClassError.value = true;
+  }
+};
 
 const resetDefaultData = () => {
   creatingClassSuccess.value = false;
+  isCreateClassError.value = false;
   className.value = "";
 };
 
@@ -104,27 +112,6 @@ const closeModal = () => {
 
 const closeFinishedModal = async () => {
   closeModal();
-  await refresh();
-};
-
-const createClass = async () => {
-  isCreatingClass.value = true;
-  creatingClassError.value = false;
-
-  try {
-    await supabase
-      .from("school_class")
-      .insert({
-        name: className.value,
-        teacher_id: userStore.currentUser?.userId!,
-      })
-      .throwOnError();
-
-    creatingClassSuccess.value = true;
-  } catch (error) {
-    creatingClassError.value = true;
-  } finally {
-    isCreatingClass.value = false;
-  }
+  await getClasses();
 };
 </script>

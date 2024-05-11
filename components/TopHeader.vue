@@ -15,7 +15,7 @@
               `${userStore.currentUser?.firstName} ${userStore.currentUser?.lastName}`
             }}
           </p>
-          <UButton color="gray" variant="outline" @click="signOut">
+          <UButton color="gray" variant="outline" @click="handleSignOut">
             Log out
           </UButton>
         </div>
@@ -54,9 +54,9 @@
 
 <script setup lang="ts">
 const userStore = useUserStore();
-const supabase = useSupabaseClient();
 const toast = useToast();
 const showMobileNav = ref<boolean>(false);
+const { signOut } = useAuth();
 
 const links = [
   { label: "Home", to: "/", icon: "i-heroicons-home-solid" },
@@ -71,12 +71,10 @@ const showLogoutError = () => {
   toast.add({ title: "Failed to log out." });
 };
 
-const signOut = async () => {
+const handleSignOut = async () => {
   showMobileNav.value = false;
   try {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-
+    await signOut();
     userStore.setUserData(null);
     await navigateTo("/login");
   } catch (e) {
