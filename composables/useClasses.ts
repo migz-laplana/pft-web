@@ -1,8 +1,11 @@
 import { apiRoutes } from "~/constants/api";
 import { useCustomFetch } from "./useCustomFetch";
+import type { SchoolClass } from "~/types/common.types";
+import type { JoinClassResponse } from "./useClasses.types";
 
-export const useClasses = () => {
+export const useClasses = async () => {
   const isCreateClassLoading = ref<boolean>(false);
+  const isJoinClassLoading = ref<boolean>(false);
   const { $customFetch } = useNuxtApp();
 
   const {
@@ -10,13 +13,13 @@ export const useClasses = () => {
     pending: isClassesLoading,
     error: isClassesError,
     refresh: getClasses,
-  } = useCustomFetch<{ name: string }[]>(apiRoutes.classes);
+  } = await useCustomFetch<SchoolClass[]>(apiRoutes.classes.index);
 
   const createClass = async (className: string) => {
     isCreateClassLoading.value = true;
 
     try {
-      await $customFetch(apiRoutes.classes, {
+      await $customFetch(apiRoutes.classes.create, {
         method: "POST",
         body: { name: className },
       });
@@ -27,6 +30,21 @@ export const useClasses = () => {
     }
   };
 
+  const joinClass = async (classCode: string): Promise<JoinClassResponse> => {
+    isJoinClassLoading.value = true;
+
+    try {
+      return await $customFetch<JoinClassResponse>(apiRoutes.classes.join, {
+        method: "POST",
+        body: { classCode },
+      });
+    } catch (error) {
+      throw error;
+    } finally {
+      isJoinClassLoading.value = false;
+    }
+  };
+
   return {
     classes,
     getClasses,
@@ -34,5 +52,7 @@ export const useClasses = () => {
     isClassesError,
     createClass,
     isCreateClassLoading,
+    joinClass,
+    isJoinClassLoading,
   };
 };

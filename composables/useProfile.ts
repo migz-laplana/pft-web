@@ -11,7 +11,7 @@ export const useProfile = () => {
         await $customFetch<GetProfileResponse>(apiRoutes.auth.profile);
 
       return {
-        userId: _id,
+        _id,
         email,
         firstName,
         lastName,

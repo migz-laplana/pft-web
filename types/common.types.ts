@@ -3,12 +3,24 @@ export enum UserRole {
   STUDENT = "STUDENT",
 }
 
-export type UserProfile = {
-  userId: string;
-  role: UserRole;
+export type UserResponse = {
+  _id: string;
   firstName: string;
   lastName: string;
+  role: string;
   email: string;
+};
+
+export type UserProfile = UserResponse & {
+  role: UserRole;
+};
+
+export type SchoolClass = {
+  _id: string;
+  name: string;
+  classCode: string;
+  teacher: UserResponse;
+  students: UserResponse[];
 };
 
 export type NavLink = {
@@ -23,4 +35,4 @@ export type GetProfileResponse = {
   lastName: string;
   role: string;
   email: string;
-}
+};
