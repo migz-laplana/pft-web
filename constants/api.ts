@@ -4,5 +4,9 @@ export const apiRoutes = {
     login: "/auth/login",
     logout: "auth/logout",
   },
-  classes: "/classes",
+  classes: {
+    index: "/classes",
+    create: "/classes/teacher-create",
+    join: "/classes/student-join",
+  },
 };

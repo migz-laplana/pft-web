@@ -90,7 +90,7 @@ const handleSignIn = async () => {
   if (!data) return;
   const { _id, firstName, lastName, role, email } = data;
   userStore.setUserData({
-    userId: _id,
+    _id,
     firstName,
     lastName,
     role: mapDbEnumToRoleEnum(role),
