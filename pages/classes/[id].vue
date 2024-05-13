@@ -1,7 +1,15 @@
 <template>
   <div>
-    <UContainer>
-      <UBreadcrumb class="mb-5" :links="breadcumbLinks" />
+    <Container>
+      <NuxtLink to="/classes">
+        <Button
+          class="mt-4"
+          severity="secondary"
+          icon="pi pi-angle-left"
+          label="Back to classes"
+          size="small"
+        />
+      </NuxtLink>
       <div v-if="isClassLoading">
         <p>Loading class data...</p>
       </div>
@@ -9,7 +17,7 @@
         <p>Failed to load class data.</p>
       </div>
       <div v-else>
-        <h1 class="text-4xl font-bold">{{ singleClass?.name }}</h1>
+        <h1 class="text-5xl font-bold mb-3 mt-6">{{ singleClass?.name }}</h1>
         <p class="mt-4">
           Class code:
           <span class="font-bold">{{ singleClass?.classCode }}</span>
@@ -18,10 +26,28 @@
           Number of students: {{ singleClass?.students.length }}
         </p>
 
-        <h2 class="mt-16 font-medium text-3xl">Students</h2>
+        <h2 class="mt-7 font-bold text-3xl">Students</h2>
         <UTable class="mt-10" :columns="tableColumns" :rows="students" />
+        <Card>
+          <template #content>
+            <DataTable
+              :value="students"
+              paginator
+              :rows="10"
+              sort-field="lastName"
+              :sort-order="1"
+            >
+              <Column
+                v-for="column in tableColumns"
+                :field="column.key"
+                :header="column.label"
+                sortable
+              />
+            </DataTable>
+          </template>
+        </Card>
       </div>
-    </UContainer>
+    </Container>
   </div>
 </template>
 
@@ -33,13 +59,14 @@ const route = useRoute();
 
 const tableColumns = [
   {
-    key: "firstName",
-    label: "First name",
-  },
-  {
     key: "lastName",
     label: "Last name",
   },
+  {
+    key: "firstName",
+    label: "First name",
+  },
+
   {
     key: "email",
     label: "Email",
@@ -54,16 +81,9 @@ const {
   `${apiRoutes.classes.index}/${route.params.id}`
 );
 
-const breadcumbLinks = generateBreadcrumbs(
-  route.fullPath,
-  singleClass.value?.name ?? "Current class"
-);
-
 const students = computed(() => {
   if (!singleClass) return [];
 
   return singleClass.value?.students;
 });
 </script>
-
-<style></style>
