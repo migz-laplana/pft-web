@@ -1,63 +1,44 @@
 <template>
-  <UContainer>
-    <div class="mt-6 md:mt-40">
-      <div class="max-w-md mx-auto border-2 rounded shadow-lg p-7">
+  <div class="mt-4 md:mt-8 mx-auto px-2 lg:px-8">
+    <Card class="w-full p-3 max-w-30rem block mx-auto shadow-3">
+      <template #content>
         <h1 class="text-2xl mb-4 text-center">Physical Fitness Test App</h1>
-        <h2 class="text-xl text-center">Sign In</h2>
-        <UFormGroup label="Email" required class="my-6">
-          <UInput
+        <h2 class="text-lg text-center mb-6">Sign In</h2>
+
+        <div class="flex flex-column gap-2 my-3">
+          <label for="email">Email</label>
+          <InputText
+            id="email"
             v-model="emailInput"
-            icon="i-heroicons-envelope"
-            placeholder="you@example.com"
-            size="xl"
+            placeholder="example@email.com"
           />
-        </UFormGroup>
-
-        <UFormGroup label="Password" required class="my-6">
-          <UInput
-            v-model="passwordInput"
-            icon="i-heroicons-lock-closed"
-            placeholder="**********"
-            size="xl"
-            :type="showPassword ? 'text' : 'password'"
-            :ui="{ icon: { trailing: { pointer: '' } } }"
-          >
-            <template #trailing>
-              <UButton
-                color="gray"
-                :icon="showPasswordIcon"
-                :padded="false"
-                variant="link"
-                @click="toggleShowPassword"
-              />
-            </template>
-          </UInput>
-        </UFormGroup>
-
-        <div class="max-w-32 mx-auto">
-          <UButton
-            class="mt-10"
-            size="lg"
-            :loading="isSignInLoading"
-            @click="handleSignIn"
-            :disabled="isSignInLoading"
-            block
-          >
-            Sign In
-          </UButton>
         </div>
 
-        <UAlert
-          v-if="isSignInError"
-          class="mt-10"
-          color="red"
-          icon="i-heroicons-exclamation-triangle-solid"
-          variant="subtle"
-          title="Error signing in! Please try again."
+        <div class="flex flex-column gap-2 my-3">
+          <label for="password">Password</label>
+          <Password
+            id="password"
+            v-model="passwordInput"
+            placeholder="********"
+            :feedback="false"
+            toggle-mask
+            input-class="w-full"
+          />
+        </div>
+
+        <Message v-if="isSignInError" severity="error">
+          Error signing in! Please try again.
+        </Message>
+        <Button
+          label="Sign In"
+          class="w-full mt-6"
+          :loading="isSignInLoading"
+          @click="handleSignIn"
+          :disabled="isSignInLoading"
         />
-      </div>
-    </div>
-  </UContainer>
+      </template>
+    </Card>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -66,21 +47,13 @@ import { mapDbEnumToRoleEnum } from "~/utils/roleEnumMapper";
 
 const emailInput = ref<string>("");
 const passwordInput = ref<string>("");
-const showPassword = ref<boolean>(false);
+
 const userStore = useUserStore();
 const { signIn, isSignInLoading, isSignInError } = useAuth();
 
 definePageMeta({
   layout: "public",
 });
-
-const showPasswordIcon = computed(() =>
-  showPassword.value ? "i-heroicons-eye" : "i-heroicons-eye-slash"
-);
-
-const toggleShowPassword = () => {
-  showPassword.value = !showPassword.value;
-};
 
 const handleSignIn = async () => {
   const data = await signIn({
