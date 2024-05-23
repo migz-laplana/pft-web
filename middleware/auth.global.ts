@@ -1,7 +1,7 @@
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware((to) => {
   const userStore = useUserStore();
 
-  const publicRoutes = ["/check", "/login"];
+  const publicRoutes = ["/check", "/logout", "/api/login", "/api/logout"];
 
   if (userStore.currentUser || publicRoutes.includes(to.path) || !to.name) {
     return;

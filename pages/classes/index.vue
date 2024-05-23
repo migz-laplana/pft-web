@@ -12,26 +12,30 @@
 
     <div class="my-7">
       <h2 class="text-3xl mb-5">Your Classes</h2>
-      <div v-if="!classes?.length">
-        <p>No classes yet.</p>
+      <div v-if="isClassesLoading" class="text-center mt-6">
+        <ProgressSpinner />
       </div>
-      <p v-if="isClassesError" class="text-red-500">
+
+      <p v-else-if="isClassesError" class="text-red-500">
         Error loading your classes.
       </p>
-      <div class="grid">
+      <div v-else-if="!classes?.length">
+        <p>No classes yet.</p>
+      </div>
+      <div v-else class="grid">
         <div v-for="classItem in classes" class="col-6 md:col-4">
-          <NuxtLink :to="`/classes/${classItem._id}`" class="no-underline">
+          <NuxtLink :to="`/classes/${classItem.id}`" class="no-underline">
             <Card class="hover:shadow-4 transition-duration-300">
               <template #content>
                 <h2 class="text-xl font-medium">
-                  {{ classItem.name }}
+                  {{ classItem.className }}
                 </h2>
                 <p>Code: {{ classItem.classCode }}</p>
-                <p>Students: {{ classItem.students.length }}</p>
+                <p>Students: {{ classItem.studentCount ?? "N/A" }}</p>
                 <p v-if="userRole === UserRole.STUDENT">
                   Teacher:
                   {{
-                    `${classItem?.teacher.firstName} ${classItem?.teacher.lastName}`
+                    `${classItem.teacherDetails.firstName} ${classItem.teacherDetails.lastName}`
                   }}
                 </p>
               </template>
@@ -139,6 +143,7 @@ const toast = useToast();
 const {
   classes,
   getClasses,
+  isClassesLoading,
   isClassesError,
   createClass,
   joinClass,
@@ -188,12 +193,12 @@ const handleJoinClass = async () => {
   isJoinClassError.value = false;
 
   try {
-    const res = await joinClass(classCodeInput.value);
+    await joinClass(classCodeInput.value);
 
     toast.add({
       severity: "success",
       summary: "Successfully joined class.",
-      detail: `You just joined class "${res.class.name}""`,
+
       life: 6000,
       group: "bottom-right",
     });
@@ -204,7 +209,7 @@ const handleJoinClass = async () => {
 
     let errorMessage: string;
 
-    switch (error.data.error) {
+    switch (error.data.data.error) {
       case JoinClassErrorName.NoClassFound:
         errorMessage = JoinClassErrorMessage.NoClassFound;
         break;

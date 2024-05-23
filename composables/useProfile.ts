@@ -1,21 +1,24 @@
-import type { GetProfileResponse, UserProfile } from "~/types/common.types";
-import { mapDbEnumToRoleEnum } from "~/utils/roleEnumMapper";
-import { apiRoutes } from "~/constants/api";
+import type { UserProfile } from "~/types/common.types";
 
 export const useProfile = () => {
   const { $customFetch } = useNuxtApp();
+  const { user } = useAuth();
 
   const getProfileDetails = async (): Promise<UserProfile> => {
     try {
-      const { _id, email, firstName, lastName, role } =
-        await $customFetch<GetProfileResponse>(apiRoutes.auth.profile);
+      const { id, permissions } = await $customFetch<{
+        id: string;
+        permissions: string[];
+      }>("/api/profile");
+
+      const undefinedString = "undefined";
 
       return {
-        _id,
-        email,
-        firstName,
-        lastName,
-        role: mapDbEnumToRoleEnum(role),
+        userId: id,
+        firstName: user?.given_name ?? undefinedString,
+        lastName: user?.family_name ?? undefinedString,
+        email: "dummy@email.com",
+        role: getRoleFromKindePermissions(permissions),
       };
     } catch (error) {
       throw error;
