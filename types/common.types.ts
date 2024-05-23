@@ -3,24 +3,48 @@ export enum UserRole {
   STUDENT = "STUDENT",
 }
 
+export enum KindePermissions {
+  TEACHER = "teacher",
+  STUDENT = "student",
+}
+
 export type UserResponse = {
-  _id: string;
+  userId: string;
+  permissions: string[];
+};
+
+export type UserProfile = {
+  userId: string;
   firstName: string;
   lastName: string;
-  role: string;
+  role: UserRole;
   email: string;
 };
 
-export type UserProfile = UserResponse & {
-  role: UserRole;
+export type KindeUser = {
+  id: string;
+  preferredEmail: string;
+  firstName: string;
+  lastName: string;
 };
 
 export type SchoolClass = {
-  _id: string;
-  name: string;
+  id: number;
+  created_at: Date;
+  className: string;
   classCode: string;
-  teacher: UserResponse;
-  students: UserResponse[];
+  teacherId: string;
+};
+
+export type GetClassesResponse = (SchoolClass & {
+  teacherDetails: KindeUser;
+  studentCount: number;
+})[];
+
+export type GetClassResponse = SchoolClass & {
+  teacherDetails: KindeUser;
+  studentCount: number;
+  students: KindeUser[];
 };
 
 export type NavLink = {

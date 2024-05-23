@@ -1,7 +1,6 @@
 import { apiRoutes } from "~/constants/api";
 import { useCustomFetch } from "./useCustomFetch";
-import type { SchoolClass } from "~/types/common.types";
-import type { JoinClassResponse } from "./useClasses.types";
+import type { GetClassesResponse } from "~/types/common.types";
 
 export const useClasses = async () => {
   const isCreateClassLoading = ref<boolean>(false);
@@ -13,13 +12,15 @@ export const useClasses = async () => {
     pending: isClassesLoading,
     error: isClassesError,
     refresh: getClasses,
-  } = await useCustomFetch<SchoolClass[]>(apiRoutes.classes.index);
+  } = await useCustomFetch<GetClassesResponse>(
+    `/api${apiRoutes.classes.index}`
+  );
 
   const createClass = async (className: string) => {
     isCreateClassLoading.value = true;
 
     try {
-      await $customFetch(apiRoutes.classes.create, {
+      await $customFetch(`/api${apiRoutes.classes.create}`, {
         method: "POST",
         body: { name: className },
       });
@@ -30,11 +31,11 @@ export const useClasses = async () => {
     }
   };
 
-  const joinClass = async (classCode: string): Promise<JoinClassResponse> => {
+  const joinClass = async (classCode: string): Promise<void> => {
     isJoinClassLoading.value = true;
 
     try {
-      return await $customFetch<JoinClassResponse>(apiRoutes.classes.join, {
+      await $customFetch(`/api${apiRoutes.classes.join}`, {
         method: "POST",
         body: { classCode },
       });

@@ -22,17 +22,18 @@ const destinationPath = route.query.dest?.toString();
 onMounted(async () => {
   try {
     const profile = await getProfileDetails();
+
     userStore.setUserData(profile);
 
     let navPathTarget = destinationPath;
 
-    if (destinationPath === "/login" || destinationPath === "/check") {
+    if (destinationPath === "/check") {
       navPathTarget = "/";
     }
 
     await navigateTo(navPathTarget);
   } catch (error) {
-    await navigateTo("/login");
+    await navigateTo("/api/login", { external: true });
   }
 });
 </script>

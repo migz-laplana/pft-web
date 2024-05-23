@@ -36,7 +36,7 @@
                     icon-pos="right"
                     @click="toggle"
                     class="p-2"
-                    :label="`${userStore.currentUser?.firstName} ${userStore.currentUser?.lastName}`"
+                    :label="`${user?.given_name} ${user?.family_name}`"
                     pt:label:class="mr-2 my-auto"
                     pt:icon:class="my-auto"
                   >
@@ -54,8 +54,8 @@
                           />
                           <span class="inline-flex flex-column">
                             <span class="font-bold">
-                              {{ userStore.currentUser?.firstName }}
-                              {{ userStore.currentUser?.lastName }}
+                              {{ user?.given_name }}
+                              {{ user?.family_name }}
                             </span>
                             <span class="text-sm mt-1">{{
                               userStore.currentUser?.role
@@ -109,9 +109,9 @@ const links: NavLink[] = [
 ];
 
 const route = useRoute();
-const { signOut } = useAuth();
 const toast = useToast();
 const userStore = useUserStore();
+const { user } = useAuth();
 
 const activeLink = computed(() => {
   if (route.path === "/") return "/";
@@ -122,9 +122,8 @@ const activeLink = computed(() => {
 
 const handleSignOut = async () => {
   try {
-    await signOut();
     userStore.setUserData(null);
-    await navigateTo("/login");
+    await navigateTo("/api/logout", { external: true });
   } catch (e) {
     toast.add({
       severity: "error",
