@@ -4,6 +4,10 @@
 
 Frontend UI for Physical Fitness Test (PFT) web app.
 
+## Dependencies
+
+- Node.js 18
+
 ## Tech Stack
 
 - Nuxt 3
