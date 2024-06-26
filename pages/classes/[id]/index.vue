@@ -26,12 +26,37 @@
         </p>
         <p class="mt-4">Number of students: {{ singleClass?.studentCount }}</p>
 
+        <h2 class="mt-7 font-bold text-3xl">Submit Test</h2>
+        <div class="grid">
+          <div class="p-1 col-6">
+            <Card class="">
+              <template #title>Pre-test</template>
+              <template #content>
+                <!-- <InlineMessage severity="success">Submitted!</InlineMessage> -->
+
+                <NuxtLink
+                  :to="`/classes/${$route.params.id}/fitness-test/${TestType.PRE_TEST}`"
+                >
+                  <Button label="Start" severity="secondary" />
+                </NuxtLink>
+              </template>
+            </Card>
+          </div>
+          <div class="p-1 col-6">
+            <Card class="">
+              <template #title>Post-test</template>
+              <template #content>
+                <NuxtLink
+                  :to="`/classes/${$route.params.id}/fitness-test/${TestType.POST_TEST}`"
+                >
+                  <Button label="Start" severity="secondary" disabled />
+                </NuxtLink>
+              </template>
+            </Card>
+          </div>
+        </div>
+
         <h2 class="mt-7 font-bold text-3xl">Students</h2>
-        <UTable
-          class="mt-10"
-          :columns="tableColumns"
-          :rows="singleClass?.students"
-        />
         <Card>
           <template #content>
             <DataTable
@@ -57,7 +82,7 @@
 
 <script setup lang="ts">
 import { apiRoutes } from "~/constants/api";
-import type { GetClassResponse } from "~/types/common.types";
+import { TestType, type GetClassResponse } from "~/types/common.types";
 
 const route = useRoute();
 

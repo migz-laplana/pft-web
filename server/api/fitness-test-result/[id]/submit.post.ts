@@ -1,14 +1,17 @@
 import { apiRoutes } from "~/constants/api";
+import { FitnessTest } from "~/types/common.types";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event);
+  const fitnessTestId = getRouterParam(event, "id");
 
   try {
     const token = await event.context.kinde.getToken();
-    console.log({ token });
-    const res = await $fetch(
-      `${config.public.serviceBaseUrl}${apiRoutes.auth.profile}`,
+
+    const res = await $fetch<FitnessTest>(
+      `${config.public.serviceBaseUrl}${apiRoutes.fitnessTestResult.index}/${fitnessTestId}/submit`,
       {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -9,4 +9,7 @@ export const apiRoutes = {
     create: "/classes/teacher-create",
     join: "/classes/student-join",
   },
+  fitnessTestResult: {
+    index: "/fitness-test-result",
+  }
 };

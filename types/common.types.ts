@@ -60,3 +60,47 @@ export type GetProfileResponse = {
   role: string;
   email: string;
 };
+
+export enum TestType {
+  PRE_TEST = "pre-test",
+  POST_TEST = "post-test",
+}
+
+export type FitnessTestAnswers = {
+  zipperTestPoints?: number;
+  weight?: number;
+  height?: number;
+  sitAndReachDistanceCm?: number;
+  pulseBeatsTenSec?: number;
+  pushupsCount?: number;
+  plankHoldDuration?: string;
+  fortyMeterSprintDuration?: string;
+  longJumpDistCm?: number;
+  hexTestFirstRev?: string;
+  hexTestSecondRev?: string;
+  dropTestFirstRead?: number;
+  dropTestSecondRead?: number;
+  dropTestThirdRead?: number;
+  jugglingHits?: number;
+  balanceLeft?: string;
+  balanceRight?: string;
+};
+
+export type FitnessTest = FitnessTestAnswers & {
+  id: number;
+  testType: TestType;
+};
+
+export enum ZipperTestChoice {
+  NO_TOUCH = "Did not touch fingertips",
+  TOUCHED = "Just touched fingertips",
+  UP_TO_2 = "Fingers overlapped: 1-2 cm",
+  UP_TO_4 = "Fingers overlapped: 3-4 cm",
+  UP_TO_7 = "Fingers overlapped: 5-7 cm",
+  AT_LEAST_8 = "Fingers overlapped: 8+ cm",
+}
+
+export type ZipperChoice = {
+  name: ZipperTestChoice,
+  points: number
+}
