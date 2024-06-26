@@ -7,10 +7,15 @@ Frontend UI for Physical Fitness Test (PFT) web app.
 ## Tech Stack
 
 - Nuxt 3
+- Kinde Auth (nuxt module)
+- PrimeVue
+- Primeflex
 
 ## Local Setup
 
-Note: Make sure that the backend service (pft-service) is also running.
+1. Make sure that the backend service (pft-service) is also running.
+2. Create `.env` file at root directory and copy contents from `.env.example` file, then supply needed environment variables.
+3. Start the app:
 
 ```bash
 # install dependencies
